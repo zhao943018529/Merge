@@ -38,65 +38,158 @@
 		}
 
 		//2+7*(15-8*1)*5 [2,'+',7,'*','(',15,'-',8,'*',1,')','*',5]
-		function parseExpression(arr){
-			let numStack = new Stack();
-			let operStack = new Stack();
-			let quoteStack = new Stack();
-			let end = arr.length;
-			for(let i=0;i<end;i++){
-				let item=arr[i];
-				if(Number.isInteger(item)){
-					numStack.push(item);
-				}else{
+
+			function parseExpression(){
+				let nums=[2,5,7,8,7,3];
+				let opers=['+','*','*','+','*'];
+				let tempNum=nums.splice(0,3);
+				let previous=opers.shift();
+				let item;
+				while((item=opers.shift())!=null){
 					switch(item){
 						case '+':
+								let a = tempNum.shift();
+								let b = tempNum.shift();
+								let c;						
+								if(previous==='*'){
+									c=a*b;
+								}else{
+									c=a+b;
+								}
 
-						case '-':
-							if(!operStack.length()){
-								operStack.push(item);
-							}else{
-								let peek = operStack.peek();
-								if(peek!=='*'||peek!=='/'){
-									let item1 = numStack.pop();
-									let item2 = numStack.pop();
-									numStack.push(item1);
-									numStack.push(item2);
-									let oper = operStack.pop();
-									operStack.push(item);
-									operStack.push(oper);
-								}else{
-									operStack.push(item);
-								}
-							}
-							break;
-						case '/':
+								tempNum.unshift(c);
+								tempNum.push(nums.shift());
+								previous=item;
+								break;
 						case '*':
-						    if(!operStack.length()){
-								operStack.push(item);
+							if(previous==='+'){
+								let a = tempNum.pop();
+								let b = tempNum.pop();
+								tempNum.push(a*b);
+								tempNum.push(nums.shift());
 							}else{
-								let peek = operStack.peek();
-								if(peek!=='-'||peek!=='+'){
-									let item1 = numStack.pop();
-									let item2 = numStack.pop();
-									numStack.push(item1);
-									numStack.push(item2);
-									let oper = operStack.pop();
-									operStack.push(item);
-									operStack.push(oper);
-								}else{
-									operStack.push(item);
+								let a = tempNum.shift();
+								let b = tempNum.shift();
+								tempNum.unshift(a*b);
+								tempNum.push(nums.shift())
+								previous=item;								
+							}
+					}
+				}
+				console.log(tempNum);
+			}
+			parseExpression();
+
+			function Queue() {
+				this.dataStore = [];
+				this.enqueue = enqueue;
+				this.dequeue = dequeue;
+				this.front = front;
+				this.back = back;
+				this.toString = toString;
+				this.empty = empty;
+			}
+			function enqueue(element) {
+				this.dataStore.push(element);
+			}
+			function dequeue() {
+				return this.dataStore.shift();
+			}
+			function front() {
+				return this.dataStore[0];
+			}
+			function back() {
+				return this.dataStore[this.dataStore.length - 1];
+			}
+			function toString() {
+				var retStr = "";
+				for (var i = 0; i < this.dataStore.length; ++i) {
+					retStr += this.dataStore[i] + "\n";
+				}
+				return retStr;
+			}
+			function empty() {
+				if (this.dataStore.length == 0) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			function algorithm(arr) {
+				let quoteStack = new Stack();
+				let numOperStack = new Stack();
+				execute(arr,{start:0},quoteStack,numOperStack);
+
+				function execute(arr, startObj, quoteStack, numOperStack) {
+					let currentQue = new Queue();
+					for (;startObj.start < arr.length; startObj.start++) {
+						let item = arr[startObj.start];
+
+						switch (item) {
+							case '(':
+								numOperStack.push(currentQue);
+								quoteStack.push('(');
+								execute(arr, ++startObj.start , quoteStack, numOperStack);
+								break;
+							case ')':
+								let quo = quoteStack.pop();
+								numOperStack.peek().enqueue(parse(currentQue));
+								break;
+							default:
+								currentQue.enqueue(item);
+						}
+					}
+					
+				}
+
+				console.log(parse(numOperStack.pop()));
+
+				function parse(queue){
+					let oper=[];
+					let nums=[];
+					let item;
+					while((item=queue.dequeue())!=null){
+						if(Number.isInteger(item)){
+							nums.push(item);
+							if(nums.length===3){
+								switch(oper[0]){
+									case '*':
+										let a = nums.shift();
+										let b = nums.shift();
+										nums.unshift(a*b);
+										oper.shift();
+										break;
+									case '+':
+										if(oper[1]==='*'){
+											let a = nums.pop();
+											let b = nums.pop();
+											nums.push(a * b);
+											oper.pop();
+										}else{
+											let a = nums.shift();
+											let b = nums.shift();
+											nums.unshift(a * b);
+											oper.shift();
+										}
 								}
 							}
-							break;
-						case '(':
-						    quoteStack.push('(');
-						    for(num=end)
-						case ')':
+						}else{
+							oper.push(item);
+						}
+					}
+
+					switch(oper.pop()){
+						case '+':
+							return nums[0]+nums[1];
+						case '*':
+							return nums[0]*nums[1];
 					}
 				}
 			}
-		}
 
-	</script>
+			algorithm([5,'+',6,'*','(',3,'+',2,')']);
+			
+				</script>
 </body>
 </html>
