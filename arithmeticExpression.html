@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		function Stack() {
+			this.dataStore = [];
+			this.top = 0;
+			this.top = 0;
+			this.push = push;
+			this.pop = pop;
+			this.peek = peek;
+			this.clear = clear;
+			this.length = length;
+		}
+
+		function push(element) {
+			this.dataStore[this.top++] = element;
+		}
+
+		function peek() {
+			return this.dataStore[this.top - 1];
+		}
+
+		function pop() {
+			return this.dataStore[--this.top];
+		}
+
+		function clear() {
+			this.top = 0;
+		}
+
+		function length() {
+			return this.top;
+		}
+
+		//2+7*(15-8*1)*5 [2,'+',7,'*','(',15,'-',8,'*',1,')','*',5]
+
+			function parseExpression(){
+				let nums=[2,5,7,8,7,3];
+				let opers=['+','*','*','+','*'];
+				let tempNum=nums.splice(0,3);
+				let previous=opers.shift();
+				let item;
+				while((item=opers.shift())!=null){
+					switch(item){
+						case '+':
+								let a = tempNum.shift();
+								let b = tempNum.shift();
+								let c;						
+								if(previous==='*'){
+									c=a*b;
+								}else{
+									c=a+b;
+								}
+
+								tempNum.unshift(c);
+								tempNum.push(nums.shift());
+								previous=item;
+								break;
+						case '*':
+							if(previous==='+'){
+								let a = tempNum.pop();
+								let b = tempNum.pop();
+								tempNum.push(a*b);
+								tempNum.push(nums.shift());
+							}else{
+								let a = tempNum.shift();
+								let b = tempNum.shift();
+								tempNum.unshift(a*b);
+								tempNum.push(nums.shift())
+								previous=item;								
+							}
+					}
+				}
+				console.log(tempNum);
+			}
+			parseExpression();
+
+			function Queue() {
+				this.dataStore = [];
+				this.enqueue = enqueue;
+				this.dequeue = dequeue;
+				this.front = front;
+				this.back = back;
+				this.toString = toString;
+				this.empty = empty;
+			}
+			function enqueue(element) {
+				this.dataStore.push(element);
+			}
+			function dequeue() {
+				return this.dataStore.shift();
+			}
+			function front() {
+				return this.dataStore[0];
+			}
+			function back() {
+				return this.dataStore[this.dataStore.length - 1];
+			}
+			function toString() {
+				var retStr = "";
+				for (var i = 0; i < this.dataStore.length; ++i) {
+					retStr += this.dataStore[i] + "\n";
+				}
+				return retStr;
+			}
+			function empty() {
+				if (this.dataStore.length == 0) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			function algorithm(arr) {
+				let quoteStack = new Stack();
+				let numOperStack = new Stack();
+				let finalQue = execute(arr,0,quoteStack,numOperStack);
+
+				function execute(arr, start, quoteStack, numOperStack) {
+					let currentQue = new Queue();
+					for (;start < arr.length; start++) {
+						let item = arr[start];
+
+						switch (item) {
+							case '(':
+								numOperStack.push(currentQue);
+								isPush=true;
+								quoteStack.push('(');
+								start = execute(arr, ++start , quoteStack, numOperStack);
+								break;
+							case ')':
+								let quo = quoteStack.pop();
+								let preStack = numOperStack.pop();
+								preStack.enqueue(parse(currentQue));
+								return start;
+							default:
+								currentQue.enqueue(item);
+						}
+					}
+					return currentQue;
+				}
+
+				console.log(parse(finalQue));
+
+				function parse(queue){
+					let oper=[];
+					let nums=[];
+					let item;
+					while((item=queue.dequeue())!=null){
+						if(Number.isInteger(item)){
+							nums.push(item);
+							if(nums.length===3){
+								switch(oper[0]){
+									case '*':
+										let a = nums.shift();
+										let b = nums.shift();
+										nums.unshift(a*b);
+										oper.shift();
+										break;
+									case '+':
+										if(oper[1]==='*'){
+											let a = nums.pop();
+											let b = nums.pop();
+											nums.push(a * b);
+											oper.pop();
+										}else{
+											let a = nums.shift();
+											let b = nums.shift();
+											nums.unshift(a * b);
+											oper.shift();
+										}
+								}
+							}
+						}else{
+							oper.push(item);
+						}
+					}
+
+					function operation(a,b,oper){
+						switch(oper){
+							case '+':
+								return a+b;
+								break;
+							case '-':
+								return a-b;
+								break;
+							case '*':
+								return a*b;
+								break;
+							case '/':
+								return a/b;
+								break;
+						}
+					}
+
+					switch(oper.pop()){
+						case '+':
+							return nums[0]+nums[1];
+						case '*':
+							return nums[0]*nums[1];
+					}
+				}
+			}
+
+			algorithm([5,'+',6,'*','(',3,'+','(',2,'+',6,')','*','(',4,'+',7,')',')']);
+			//suffix operation
+			function parseStr(str){
+				this.str=str;
+				this.stack = new Stack();
+				this.output='';
+				this.execute=function(){
+					for (let i = 0; i < this.str.length; i++) {
+						let charStr = this.str[i];
+						switch (charStr) {
+							case '+':
+							case '-':
+								this.getOper(charStr,1);
+								break;
+							case '*':
+							case '/':
+								this.getOper(charStr,2)
+								break;
+							case '(':
+								this.stack.push('(');
+								break;
+							case ')':
+								this.getParen(charStr);
+								break;
+							default:
+								this.output += charStr;
+						}
+					}
+
+					while(this.stack.length()){
+						this.output+=this.stack.pop();
+					}
+					return this.output;
+				}
+
+
+				this.getOper = function(opThis, priority) {
+
+					while (this.stack.length()) {
+						let opTop = this.stack.pop();
+						if (opTop === '(') {
+							this.stack.push(opTop);
+							break;
+						} else {
+							let prePriority;
+							if (opTop === '+' || opTop ==='-' ) {
+								prePriority=1;
+							} else {
+								prePriority=2;
+							}
+							if (prePriority < priority) {
+								this.stack.push(opTop);
+								break;
+							} else {
+								this.output+=opTop;
+							}
+
+						}
+					}
+					this.stack.push(opThis);
+				}
+
+				this.getParen=function(ch){
+					while(this.stack.length()){
+						let opTop = this.stack.pop();
+						if(opTop==='('){
+							break;
+						}else{
+							this.output+=opTop;
+						}
+					}
+				}
+			}
+
+			let opt = new parseStr('5+6*(3+4*3)+6*(4+2)');
+			alert(opt.execute());
+</script>
+</body>
+</html>

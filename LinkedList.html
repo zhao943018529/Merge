@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>LinkedList</title>
+</head>
+<body>
+	<script>
+		//SingleLinkedList
+		function Node(element){
+			this.element=element;
+			this.next=null;
+		}
+		function LList(){
+			this.head = new Node('head');
+			this.find=function(element){
+				let current=this.head;
+				while(current.element!==element){
+					current =current.next;
+				}
+
+				return current;
+			}
+
+			this.insert=function(newEle,ele){
+				let newNode = new Node(newEle);
+				let oldNode = this.find(ele);
+				newNode.next=oldNode.next;
+				oldNode.next=newNode;
+			}
+
+			this.findPrevious=function(element){
+				let current = this.head;
+				while(current&&current.next.element!==element){
+					current=current.next;
+				}
+
+				return current;
+			}
+
+			this.remove =function(element){
+				let previous = this.findPrevious(element);
+				let current = previous.next;
+				previous.next=current.next;
+				current.next=null;
+			}
+
+			this.toString=function(){
+				let current = this.head;
+				while(current.next!==null){
+					console.log(current.next.element);
+					current=current.next;
+				}
+			}
+		}
+
+		let ll = new LList();
+		ll.insert('aaa','head');
+		ll.insert('bbb','aaa');
+		ll.insert('ccc','bbb');
+		ll.insert('ddd','ccc');
+		ll.toString();
+
+		function LinkedNode(element){
+			this.element = element;
+			this.previous=null;
+			this.next=null;
+		}
+
+		function LinkedList(){
+			this.head = new LinkedNode('head');
+			this.insert =function(newEle,elem){
+				let current = this.find(elem);
+				if(current){
+					let newLinked = new LinkedNode(newEle);
+					newLinked.next = current.next;
+					newLinked.previous = current;
+					current.next&&(current.next.previous=newLinked);
+					current.next=newLinked;
+					return true;
+				}else{
+					return false;
+				}
+			}
+
+			this.find = function(element) {
+				let current = this.head;
+				while (current && current.element !== element) {
+					current = current.next;
+				}
+
+				return current;
+			}
+
+			this.findLast =function(){
+				let current = this.head;
+				while(current.next!==null){
+					current = current.next;
+				}
+
+				return current;
+			}
+
+			this.remove= function(element){
+				let current = this.find(element);
+				current.previous.next=current.next;
+				if(current.next!==null){
+					current.next.previous=current.previous;
+				}
+				current.previous=null;
+				current.next=null;
+			}
+
+			this.display=function(){
+				let current = this.head;
+				while(current.next!==null){
+
+					console.log(current.next.element);
+					current=current.next;
+				}
+			}
+		}
+
+		let list = new LinkedList();
+		list.insert('alal','head');
+		list.insert('akak','alal');
+		list.insert('ahah','akak');
+		list.display();
+		list.remove('akak');
+		list.display();
+
+
+		function CirLinkedList(){
+			this.head = new LinkedNode('head');
+			this.head.next=this.head;
+			this.current=null;
+			this.insert =function(newEle,elem){
+				let current = this.find(elem);
+				if(current){
+					let newLinked = new LinkedNode(newEle);
+					newLinked.next = current.next;
+					newLinked.previous = current;
+					if (current.next) {
+						current.next.previous = newLinked
+					} else {
+						newLinked.next = this.head;
+					}
+					current.next=newLinked;
+					return true;
+				}else{
+					return false;
+				}
+			}
+
+			this.find = function(element) {
+				let current = this.head;
+				while (current.next !== this.head && current.next.element !== element) {
+					current = current.next;
+				}
+
+				return current;
+			}
+
+			this.findLast =function(){
+				let current = this.head;
+				while(current.next!==this.head){
+					current = current.next;
+				}
+
+				return current;
+			}
+
+			this.remove= function(element){
+				let current = this.find(element);
+				current.previous.next=current.next;
+				if(current.next!==this.head){			
+					current.next.previous=current.previous;
+				}
+				current.previous=null;
+				current.next=null;
+			}
+
+			this.display=function(){
+				let current = this.head;
+				while(current.next!==this.head){
+					console.log(current.next.element);
+					current=current.next;
+				}
+			}
+			this.show=function(){
+				return this.current;
+			}
+			this.advance(n){
+
+				while(n--&&this.current!==null){
+					if(this.current.previous===this.head)break;
+					this.current=this.current.previous;
+				}
+
+				return this.current;
+			}
+
+			this.back=function(n){
+				this.current = this.current?this.current:this.head;
+				while(n--&&this.current&&this.current.next!==this.head){
+					this.current=this.current.next;
+				}
+
+				return this.current;
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+	</script>
+</body>
+</html>
