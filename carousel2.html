@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<style type="text/css">
+	.carousel{
+		width: 800px;
+		height: 400px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.slide{
+
+	}
+	
+	.carousel-inner{
+		width: 600%;
+		height: 100%;
+		font-size: 0;
+		transform: translateX(-800px);
+		/*transition: transform 2.5s ease-in-out;*/
+	}
+
+
+
+	.carousel-item{
+		display: inline-block;
+		width: 16.666667%;
+		height: 100%;
+	}
+
+	.carousel-item a{
+		display: inline-block;
+		width: 100%;
+		height: 100%;
+	}
+	
+	.carousel-item img{
+		width: 100%;
+		height: 100%;
+	}
+
+	.carousel-opt{
+/*		position: absolute;
+	    top: 50%;
+	    font-size: 32px;
+	    line-height: 56px;
+	    font-weight: bold;
+	    margin-top: -28px;
+	    display: flex;
+	    text-align: center;
+	    width: 100%;
+	    justify-content: space-between;
+	    z-index: -1;*/
+	}
+
+	.carousel-opt > span{
+		width: 56px;
+		cursor: pointer;
+		position: absolute;
+		line-height: 56px;
+		font-size: 48px;
+		top: 50%;
+		margin-top:-28px;
+		text-align: center;
+		    user-select: none;
+	}
+	
+	.previous{
+		left: 0;
+	}
+
+	.next{
+		right: 0;
+	}
+	
+	.parent{
+		width: 200px;
+		height: 200px;
+		border: 1px dotted #ddd;
+		padding: 30px;
+	}
+
+	.child{
+		width: 50px;
+		height: 50px;
+		background: #1330E3;
+	}
+</style>
+<body>
+	<div class="carousel slide">
+		<div class="carousel-inner">
+			<div class="carousel-item"><a href="#"><img src="./images/0004.jpg" alt="Fourth"></a></div>
+			<div class="carousel-item"><a href="#"><img src="./images/0001.jpg" alt="First"></a></div>
+			<div class="carousel-item"><a href="#"><img src="./images/0002.jpg" alt="Second"></a></div>
+			<div class="carousel-item"><a href="#"><img src="./images/0003.jpg" alt="Third"></a></div>
+			<div class="carousel-item"><a href="#"><img src="./images/0004.jpg" alt="Fourth"></a></div>
+			<div class="carousel-item"><a href="#"><img src="./images/0001.jpg" alt="First"></a></div>
+		</div>
+		<a class="carousel-opt">
+			<span class="previous"><</span><span class="next">></span>
+		</a>
+	</div>
+	<script>
+				let container = document.getElementsByClassName("carousel")[0];
+				let inner = document.getElementsByClassName("carousel-inner")[0];
+				let previous = document.getElementsByClassName("previous")[0];
+				let next = document.getElementsByClassName("next")[0];
+				let cwidth = container.clientWidth;
+				let index = 1;
+				let tid;
+				let isTransition;	
+
+				function setTransform(elem, num) {
+					elem.style.transform = 'translateX(' + num + 'px)';
+				}
+
+				function addTransition(elem, time) {
+					elem.style.transition = 'transform '+time+'s ease-in-out';
+				}
+
+				function removeTransition(elem) {
+					elem.style.transition = "none";
+				}
+
+				function goNext(){
+					isTransition=true;
+					index++;
+					addTransition(inner, 1);
+					setTransform(inner, -cwidth*index);
+				}
+
+
+				function goPre(){
+					isTransition=true;
+					index--;
+					addTransition(inner, 1);
+					setTransform(inner, -cwidth*index);	
+				}
+
+				inner.addEventListener('transitionend',function(event){		
+					if(index>=5){
+						removeTransition(inner);
+						index=1;
+						setTransform(inner, -cwidth*index);
+					}else if(index<=0){
+						removeTransition(inner);
+						index=4;
+						setTransform(inner, -cwidth*index);
+					}
+
+					isTransition=false;
+				});
+
+				container.addEventListener('mouseenter',function(event){
+					clearInterval(tid);
+				});
+
+				container.addEventListener('mouseleave',function(event){
+					start()
+				});
+
+				previous.addEventListener('click',function(event){
+					if(!isTransition){
+						goPre();
+					}
+				});
+
+				next.addEventListener('click',function(event){
+					if(!isTransition){
+						goNext();
+					}
+				});
+
+				function start(){
+					tid = setInterval(goNext,1500);
+				}
+
+				start();
+	</script>
+</body>
+</html>
